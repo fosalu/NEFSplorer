@@ -1,0 +1,238 @@
+/*Copyright (C) 2024 Fournelle Sam
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of Fournelle Sam shall not be used in advertising or otherwise to promote the sale,
+use or other dealings in this Software without prior written authorization from Fournelle Sam.*/
+
+
+@font-face {
+  font-family: 'Roboto', sans-serif;
+  src: url(Roboto-Regular.ttf);
+}
+
+body{
+  background-color: #373737;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  /*overflow-x: hidden;*/
+}
+
+button{
+  background-color: transparent;
+  color: white;
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+table{
+  border: 1px solid black;
+  width: 100%;
+  margin-left: -4px;
+}
+
+.filebutton{
+  text-align: left;
+  width: 350px;
+  height: 50px;
+  margin-left: 10px;
+}
+
+#filetable{
+  width: 100%;
+}
+
+#icon{
+  width: 30px;
+  padding-left: 10px;
+}
+
+#icontd{
+  width: 50px;
+}
+
+#fileoperationstd{
+  width: 50px;
+}
+
+.operationsbutton{
+  height: 50px;
+  margin-left: 0px;
+}
+
+.operationdots{
+  height: 30px;
+  padding-top: 4px;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+#renamefilesystembutton{
+  float: right;
+}
+
+#addfilebutton, #writeButton{
+  margin-left: 5px;
+  float: right;
+}
+
+#scanButton{
+  margin-top: 90%;
+  margin-left: 38%;
+  padding: 10px;
+}
+
+#circlep{
+  text-align: center;
+  margin-left: 15px;
+}
+
+#newfilesystembutton{
+  margin-left: 33.5%;
+  padding: 10px;
+  margin-top: 0px;
+}
+
+#startupnotep{
+  margin-top: 200px;
+  text-align: center;
+  margin-left: 15px;
+}
+
+#infop{
+  text-align: center;
+  margin-top: 80%;
+}
+
+input{
+  margin-left: 10px;
+  margin-right: 15px;
+  width: 75%;
+  margin-top: 10%;;
+}
+
+h1{
+  text-align: center;
+  font-size: 25px;
+}
+
+#backtofileviewbutton{
+  padding: 5px;
+  margin-left: 5px;
+}
+
+#fileviewer{
+  padding-top: 10px;
+}
+
+#cancelbutton{
+  padding: 5px;
+  margin-left: 5px;
+}
+
+#textp{
+  background-color: white;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
+  border-radius: 5px;
+  color: black;
+  height: 500px;
+  padding: 10px;
+}
+
+#imgdisplay{
+  border-style: solid;
+  border-color: white;
+  border-width: 2px;
+  border-radius: 5px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+}
+
+audio{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
+}
+
+#wrongbrowserdiv{
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.operationsoptionbutton{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 100px;
+}
+
+#nefsplorerdiv{
+  text-align: center;
+  margin-top: 30%;
+  margin-bottom: -40%;
+  font-size: 20px;
+}
+
+.circles {
+  margin-top: -10%;
+  position: center;
+  vertical-align: middle;
+  width: 100%;
+  margin-left: -10px;
+
+  > div {
+    animation: growAndFade 3s infinite ease-out;
+    background-color: #03f0fc;
+    border-radius: 50%;
+    opacity: 0;
+    position: absolute;
+    width: 200%;
+    height: 0;
+    padding-top: 200%;
+    margin-left: -50%;
+  }
+
+  .circle1 {
+    animation-delay: 1s;
+    z-index: -1;
+
+  }
+  .circle2 {
+    animation-delay: 2s;
+    z-index: -1;
+  }
+  .circle3 {
+    animation-delay: 3s;
+    z-index: -1;
+  }
+}
+
+@keyframes growAndFade {
+  0% {
+    opacity: .25;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
