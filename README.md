@@ -10,8 +10,7 @@ Once you're there, touch the 3 dots to the right of your Chrome address bar and 
 NEFSplorer will be installed on your device and should appear on your home screen shortly after.
 
 ### I run iOS or use a different browser other than Chrome
-You are out of luck. NEFSplorer uses the Web NFC API, which, at the time of writing this,\
-is neither supported by other browsers on Android, nor on iOS.
+You are out of luck. NEFSplorer uses the Web NFC API, which, at the time of writing this, is neither supported by other browsers on Android, nor on iOS.
 
 ## Features
 ### Natively supported file formats
