@@ -1,5 +1,5 @@
 # NEFSplorer
-NEFSplorer is a file explorer, file viewer and file system manager for NFC tags using the NEFS file system, all running as an Android app under Google Chrome.
+NEFSplorer is a file explorer, file viewer and file system manager for NFC tags using the [NEFS file system](https://github.com/fosalu/NEFS), all running as an Android app under Google Chrome.
 
 ## Getting started
 The most up-to-date and ready-to-go version of NEFSplorer can be found here: https://fosa.lu/NEFSplorer
@@ -28,7 +28,7 @@ This is why some of the most common file types and formats are natively supporte
 
 ### File system operations
 NEFSplorer can do all the usual file system operations, such as read, write, delete and rename files and directories.
-More advance actions, such as formatting and managing an NFC device's NDEF storage and generating or renaming an NEFS file system are also supported.
+More advance actions, such as formatting and managing an NFC device's NDEF storage and generating or renaming an [NEFS file system](https://github.com/fosalu/NEFS) are also supported.
 
 ### Data privacy
 Due to fact that NEFSplorer runs under Google Chrome, some users might have some privacy concerns.
