@@ -33,8 +33,7 @@ More advance actions, such as formatting and managing an NFC device's NDEF stora
 ### Data privacy
 Due to fact that NEFSplorer runs under Google Chrome, some users might have some privacy concerns.
 But rest assured, your data is yours and **ONLY** yours to keep. NEFSplorer's code runs on the client side, meaning your device!
-No user or file data is transmitted back to the server.\
-The code is also open-source, meaning you can check for yourself.
+No user or file data is transmitted back to the server. The code is also open-source, meaning you can check for yourself.
 
 ## Hosting your own NEFSplorer instance
 You are free to use the source code and host your own instance of NEFSplorer, if you so desire.\
