@@ -23,7 +23,7 @@ body{
   background-color: #373737;
   color: white;
   font-family: 'Roboto', sans-serif;
-  /*overflow-x: hidden;*/
+  overflow-x: hidden;
 }
 
 button{
@@ -34,20 +34,21 @@ button{
 }
 
 table{
-  border: 1px solid black;
+  border: 2px dashed grey;
   width: 100%;
   margin-left: -4px;
+  padding-bottom: 3px;
 }
 
 .filebutton{
   text-align: left;
-  width: 350px;
+  width: 72vw;
   height: 50px;
   margin-left: 10px;
 }
 
 #filetable{
-  width: 100%;
+  width: 98vw;
 }
 
 #icon{
@@ -77,6 +78,7 @@ table{
 
 #renamefilesystembutton{
   float: right;
+  margin-bottom: 5px;
 }
 
 #addfilebutton, #writeButton{
