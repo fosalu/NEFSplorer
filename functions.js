@@ -65,7 +65,12 @@ writeButton.addEventListener("click", async () => {
   try {
     const ndef = new NDEFReader();
     NDEFarray.forEach((entry, i) => {
-      message = {recordType: "text", data: entry};
+      if (entry.slice(0, 5) == "cont:") {//see if entry is base64 data by checking "cont:" header
+        entry = base64ToArrayBuffer(entry.substring(5));
+        message = {recordType: "unknown", data: entry};
+      }else{
+        message = {recordType: "text", data: entry, lang: "\0"}; //added explicit NULL character to lang tag
+      }
       toBeWritten.records.push(message);
     });
     await ndef.write(toBeWritten);
@@ -78,13 +83,17 @@ writeButton.addEventListener("click", async () => {
 });
 }
 
-function writeData(){
-  let toBeWritten = {records: [{recordType: "text", data:"test1"}, {recordType: "text", data:"test2"}]};
-  return toBeWritten;
+function base64ToArrayBuffer(base64) {
+    var binaryString = atob(base64);
+    var bytes = new Uint8Array(binaryString.length);
+    for (var i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
 }
 
 function getFileType(filename){
-  if ((filename.slice(-3).toUpperCase() == "JPG") || (filename.slice(-4).toUpperCase() == "JPEG") || (filename.slice(-3).toUpperCase() == "PNG") || (filename.slice(-3).toUpperCase() == "GIF")) {
+  if ((filename.slice(-3).toUpperCase() == "JPG") || (filename.slice(-3).toUpperCase() == "PNG") || (filename.slice(-3).toUpperCase() == "GIF")) {
     return "imgfilename";
   }else if ((filename.slice(-3).toUpperCase() == "MP3") || (filename.slice(-3).toUpperCase() == "WAV") || (filename.slice(-3).toUpperCase() == "OGG")){
     return "audiofilename";
@@ -98,7 +107,6 @@ function getFileType(filename){
 function ndefmessagetodata(message){
   filesystemdata = filesystemdata.sort();
   let output = "";
-  let previoustype = "";
   let currentlyhandlingfiledata = false;
   let currentdata = "";
   let innefs = false;
@@ -106,34 +114,18 @@ function ndefmessagetodata(message){
   let filesystemname = "";
   let data = [];
   message.records.forEach(function(record){
-    const textDecoder = new TextDecoder(record.encoding);
-    currentdata = textDecoder.decode(record.data);
-    currentlyhandlingfiledata = false;
     if (innefs == true) { //only execute while currently reading inside file system
-      if (previoustype == "textfilename") { //data entry for text
-        previoustype = "";
+      if (currentlyhandlingfiledata == true) { //handling binary file data
+        currentdata = "cont:" + btoa(String.fromCharCode.apply(null, new Uint8Array(record.data.buffer))); //getting arraybuffer from dataview object and converting it to base64
         currentlyhandlingfiledata = true;
         data[(data.length - 1)].push(currentdata);
-      }
-      if (previoustype == "imgfilename") { //data entry for base64 img
-        previoustype = "";
-        currentlyhandlingfiledata = true;
-        data[(data.length - 1)].push(currentdata);
-      }
-      if (previoustype == "audiofilename") { //data entry for base64 audio
-        previoustype = "";
-        currentlyhandlingfiledata = true;
-        data[(data.length - 1)].push(currentdata);
-      }
-      if (previoustype == "unsupportedfilename") { //data entry for base64 unsupported data
-        previoustype = "";
-        currentlyhandlingfiledata = true;
-      }
-      if (currentlyhandlingfiledata == false) { //only execute while NOT handling a file´s data
+      }else{ //only execute while NOT handling a file´s data
+        const textDecoder = new TextDecoder(record.encoding);
+        currentdata = textDecoder.decode(record.data);
         if (currentdata.charAt(0) == "f") { //filename entry
-          previoustype = getFileType(currentdata);
           let newsubarray = [currentpath.join("/") + "/" + currentdata.slice(1)];
           data.push(newsubarray);
+          currentlyhandlingfiledata = true;
         }
         if (currentdata.charAt(0) == "d") { //directory start entry
           currentpath.push(currentdata.slice(1));
@@ -146,6 +138,8 @@ function ndefmessagetodata(message){
         }
       }
     }else {
+      const textDecoder = new TextDecoder(record.encoding);
+      currentdata = textDecoder.decode(record.data);
       if (currentdata.slice(0,4) == "NEFS") { //root directory entry
         innefs = true;
         filesystemname = currentdata.slice(4);
@@ -182,9 +176,9 @@ function generatefileviewer(){ //generates the filexplorerdiv
       document.getElementById('fileviewer').innerHTML = file + ': <i><b>"' + currentdirectory + '"<br><br><br></i></b>';
       if (previouspath == "") {previouspath = "/";} //corrects root directory
       if (currentdirectory != "/") { //generates back button if not in root directory
-        document.getElementById('fileviewer').innerHTML += '<button id="' + previouspath + 'back" class="backbutton" onclick="jumptodirectory()">< Back</button>';
+        document.getElementById('fileviewer').innerHTML += '<button id="' + previouspath + 'back" class="backbutton" onclick="jumptodirectory()"><- Back</button>';
       }else{
-        document.getElementById('fileviewer').innerHTML += '<button disabled>< Back</button>';
+        document.getElementById('fileviewer').innerHTML += '<button disabled><- Back</button>';
       }
       document.getElementById('fileviewer').innerHTML += '<button id="addfilebutton" onclick="generateaddfile()">+ Add File</button><button id="writeButton">Write to NFC device</button><button id="renamefilesystembutton" onclick="generaterenamefilesystem()">Rename file system</button><br><br>';
       tableoutput = '<table id="filetable">';
@@ -231,7 +225,7 @@ function generatefileviewer(){ //generates the filexplorerdiv
     tableoutput += '<tr><td id="emptyfstd"><i><b>Note:</b> The root directory is currently empty, let\'s <b>add a file</b>!</td></tr>';
   }
   tableoutput += "</table>";
-  document.getElementById('fileviewer').innerHTML += tableoutput + '<br><p id="notep"><i><b>Note:</b> NEFS does not support empty directories. A directory will be automatically created when a file is moved to it.</i></p>';
+  document.getElementById('fileviewer').innerHTML += tableoutput + '<br><p id="notep"><i><b>Note:</b> NEFSplorer does not support empty directories. A directory will automatically be created when a file is moved to it.</i></p>';
   addwriteevent();
   if (filesystemexists == false) {
     nofilesystemfound();
@@ -264,20 +258,28 @@ function gotofilecontent(){ //checks which file has been clicked and excecutes t
   }else if (filetype == "audiofilename") {
     generateaudioviewer(filename, filedata);
   }else {
-    downloadunsupportedfile(filename, filedata);
+    downloadfile(filename, filedata);
   }
 }
 
 function generatetextviewer(filename, filedata){ //generates the textviewer
-  document.getElementById('fileviewer').innerHTML = '<button id="backtofileviewbutton" onclick="generatefileviewer()">Back to explorer</button><h1>' + filename + '</h1><p id="textp">' + filedata + '</p>';
+  document.getElementById('fileviewer').innerHTML = '<button id="backtofileviewbutton" onclick="generatefileviewer()"><-  Back to explorer</button><h1>' + filename + '</h1><textarea disabled type="text" id="textinput">' + atob(filedata.substring(5)) + '</textarea><button class="operationsoptionbutton" id="savebutton" onclick="downloadfile(' + "'" + filename + "', " + "'" + filedata + "'" + ')">Save</button>';
 }
 
 function generateimageviewer(filename, filedata){ //generates the imgviewer
-  document.getElementById('fileviewer').innerHTML = '<button id="backtofileviewbutton" onclick="generatefileviewer()">Back to explorer</button><h1>' + filename + '</h1><img src="' + filedata + '" id="imgdisplay">';
+  document.getElementById('fileviewer').innerHTML = '<button id="backtofileviewbutton" onclick="generatefileviewer()"><-  Back to explorer</button><h1>' + filename + '</h1><img src="data:@file/' + filename.slice(-3).toLowerCase() + ';base64,' + filedata.substring(5) + '" id="imgdisplay"><button class="operationsoptionbutton" id="savebutton" onclick="downloadfile(' + "'" + filename + "', " + "'" + filedata + "'" + ')">Save</button>';
 }
 
 function generateaudioviewer(filename, filedata){ //generates the audioviewer
-  document.getElementById('fileviewer').innerHTML = '<button id="backtofileviewbutton" onclick="generatefileviewer()">Back to explorer</button><h1>' + filename + '</h1><audio controls="controls" autobuffer="autobuffer"><source src="' + filedata + '"></audio>';
+  var out = '<button id="backtofileviewbutton" onclick="generatefileviewer()"><-  Back to explorer</button><h1>' + filename + '</h1><audio controls="controls" autobuffer="autobuffer"><source src="data:audio/';
+  if (filename.slice(-3).toLowerCase() == "mp3") { //special case for mp3 files, audio player expects string "MPEG"
+    out = out + "mpeg";
+  }else{
+    out = out + filename.slice(-3).toLowerCase();
+  }
+  out = out + ';base64,' + filedata.substring(5) + '"></audio><button class="operationsoptionbutton" id="savebutton" onclick="downloadfile(' + "'" + filename + "', " + "'" + filedata + "'" + ')">Save</button>';
+  document.getElementById('fileviewer').innerHTML = out;
+
 }
 
 function generatefileoperations(){
@@ -425,7 +427,7 @@ function movefile(){
       filesystemdata.forEach((file, i) => {
         if (i != 0) {
           if (file[0] == filename) {
-            filesystemdata[i][0] = filename.replace(currentdirectory, newpath);
+            filesystemdata[i][0] = filename.replace(currentdirectory, newpath).replace("//", "/"); //Avoiding issue where two / are placed in a path
             currentdirectory = newpathnoslash;
             generatefileviewer();
           }
@@ -448,39 +450,26 @@ function addfile(){
   let filetype = getFileType(filename);
   let filedata = "";
   let filearray = [];
-  if (filetype == "textfilename") { //text file handling
-    reader.readAsText(file);
-    reader.onload = function(){
-      filedata = reader.result;
-      if (currentdirectory == "/") {
-        filearray[0] = currentdirectory + filename;
-      }else{
-        filearray[0] = currentdirectory + "/" + filename;
-      }
-      filearray[1] = filedata;
-      filesystemdata.push(filearray);
-      generatefileviewer();
-    };
-  }else{ //other file handling
     reader.readAsDataURL(file);
     reader.onload = function(){
       filedata = reader.result;
+      filename = filename.replace(".jpeg", ".jpg"); //change jpeg to jpg if required
       if (currentdirectory == "/") {
         filearray[0] = currentdirectory + filename;
       }else{
         filearray[0] = currentdirectory + "/" + filename;
       }
-      filearray[1] = filedata;
+      filedata = filedata.replace('data:', '');
+      filearray[1] = "cont:" + filedata.replace(/^.+,/, '');
       filesystemdata.push(filearray);
       generatefileviewer();
-    };
   }
 }
 
-function downloadunsupportedfile(filename, filedata){
+function downloadfile(filename, filedata){
   var link = document.createElement("a");
   link.download = filename;
-  link.href = filedata;
+  link.href = "data:@file/plain;base64," + filedata.substring(5);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

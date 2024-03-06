@@ -40,6 +40,10 @@ table{
   padding-bottom: 3px;
 }
 
+audio{
+  width: 98%;
+}
+
 .filebutton{
   text-align: left;
   width: 72vw;
@@ -74,6 +78,10 @@ table{
   padding-top: 4px;
   padding-left: 7px;
   padding-right: 7px;
+}
+
+#savebutton{
+  margin-top: 30px;
 }
 
 #renamefilesystembutton{
@@ -140,7 +148,7 @@ h1{
   margin-left: 5px;
 }
 
-#textp{
+#textinput{
   background-color: white;
   border-style: solid;
   border-color: black;
@@ -149,6 +157,7 @@ h1{
   color: black;
   height: 500px;
   padding: 10px;
+  width: 95%;
 }
 
 #imgdisplay{
