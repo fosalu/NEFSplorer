@@ -117,7 +117,7 @@ function ndefmessagetodata(message){
     if (innefs == true) { //only execute while currently reading inside file system
       if (currentlyhandlingfiledata == true) { //handling binary file data
         currentdata = "cont:" + btoa(String.fromCharCode.apply(null, new Uint8Array(record.data.buffer))); //getting arraybuffer from dataview object and converting it to base64
-        currentlyhandlingfiledata = true;
+        currentlyhandlingfiledata = false;
         data[(data.length - 1)].push(currentdata);
       }else{ //only execute while NOT handling a file´s data
         const textDecoder = new TextDecoder(record.encoding);
